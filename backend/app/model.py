@@ -11,8 +11,7 @@ from tensorflow.keras.models import load_model
 
 # Load the model once when the module is imported.
 # The model file is expected to be mounted at /model/1.keras inside the container.
-MODEL_PATH = os.getenv("MODEL_PATH", "/model/1.keras")
-
+MODEL_PATH = os.getenv("MODEL_PATH", "/app/model/1.keras")
 if not os.path.exists(MODEL_PATH):
     raise FileNotFoundError(f"Model file not found at {MODEL_PATH}")
 
