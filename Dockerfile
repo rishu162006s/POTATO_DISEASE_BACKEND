@@ -12,4 +12,4 @@ COPY model/ ./model
 
 EXPOSE 10000
 
-CMD ["python", "app/main.py"]
+CMD ["python", "-m", "app.main"]
