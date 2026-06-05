@@ -15,7 +15,7 @@ MODEL_PATH = os.getenv("MODEL_PATH", "/app/model/1.keras")
 if not os.path.exists(MODEL_PATH):
     raise FileNotFoundError(f"Model file not found at {MODEL_PATH}")
 
-model = load_model(MODEL_PATH)
+
 
 # Determine expected input size from the model's first layer if possible.
 # Fallback to 224x224.
