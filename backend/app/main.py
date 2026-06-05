@@ -6,7 +6,16 @@ from starlette.responses import JSONResponse
 
 from .schemas import PredictionRequest, PredictionResponse
 from .model import predict
+import tensorflow as tf
+import os
 
+MODEL_PATH = os.getenv("MODEL_PATH", "/app/model/1.keras")
+
+@app.on_event("startup")
+def load_model():
+    global model
+    model = tf.keras.models.load_model(MODEL_PATH)
+    print("✅ Model loaded successfully")
 app = FastAPI(title="Potato Disease Prediction API", version="1.0.0")
 
 # Allow all origins for simplicity – adjust for production as needed
