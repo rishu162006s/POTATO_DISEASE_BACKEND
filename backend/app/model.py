@@ -19,15 +19,18 @@ def predict(image_base64: str, model):
     if "," in image_base64:
         image_base64 = image_base64.split(",")[1]
 
-    decoded = base64.b64decode(image_base64)
-    image = Image.open(io.BytesIO(decoded))
+    try:
+        decoded = base64.b64decode(image_base64)
+        image = Image.open(io.BytesIO(decoded))
+    except Exception:
+        raise ValueError("Invalid image format")
 
     input_arr = preprocess_image(image)
 
-    preds = model.predict(input_arr)[0]  # softmax output
+    preds = model.predict(input_arr)
 
-    class_idx = int(np.argmax(preds))
-    confidence = float(np.max(preds))
+    class_idx = int(np.argmax(preds, axis=1)[0])
+    confidence = float(np.max(preds))  # 👈 THIS is your confidence
 
     class_file = os.path.join("model", "class_names.txt")
 
