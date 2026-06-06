@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .schemas import PredictionRequest, PredictionResponse
 from .model import predict
-from tensorflow.keras.models import load_model
+from tensorflow as tf
 import os
 
 app = FastAPI(title="Potato Disease API")
@@ -16,7 +16,7 @@ model = None
 @app.on_event("startup")
 def load_model():
     global model
-    model = load_model(MODEL_PATH)
+    model = model = tf.keras.models.load_model(MODEL_PATH)
     print("Model loaded successfully")
 
 
