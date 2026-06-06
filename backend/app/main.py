@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .schemas import PredictionRequest, PredictionResponse
 from .model import predict
-from tensorflow as tf
+import tensorflow as tf
 import os
 
 app = FastAPI(title="Potato Disease API")
