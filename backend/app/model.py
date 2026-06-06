@@ -42,6 +42,6 @@ def predict(image_base64: str, model):
         class_name = str(class_idx)
 
     return {
-        "class": class_name,
+        "class_": class_name,
         "confidence": confidence
     }
