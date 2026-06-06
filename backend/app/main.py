@@ -34,7 +34,11 @@ app.add_middleware(
 def predict_image(req: PredictionRequest):
     try:
         result = predict(req.image_base64, model)
-        return PredictionResponse(prediction=result)
+
+        return {
+    "class": result["class"],
+    "confidence": result["confidence"]
+}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
