@@ -16,26 +16,29 @@ def preprocess_image(image: Image.Image):
 
 def predict(image_base64: str, model):
 
-    # fix base64 format if needed
     if "," in image_base64:
         image_base64 = image_base64.split(",")[1]
 
-    try:
-        decoded = base64.b64decode(image_base64)
-        image = Image.open(io.BytesIO(decoded))
-    except Exception:
-        raise ValueError("Invalid image format")
+    decoded = base64.b64decode(image_base64)
+    image = Image.open(io.BytesIO(decoded))
 
     input_arr = preprocess_image(image)
 
-    preds = model.predict(input_arr)
-    class_idx = int(np.argmax(preds, axis=1)[0])
+    preds = model.predict(input_arr)[0]  # softmax output
+
+    class_idx = int(np.argmax(preds))
+    confidence = float(np.max(preds))
 
     class_file = os.path.join("model", "class_names.txt")
 
     if os.path.exists(class_file):
         with open(class_file, "r") as f:
             classes = [line.strip() for line in f.readlines()]
-        return classes[class_idx]
+        class_name = classes[class_idx]
+    else:
+        class_name = str(class_idx)
 
-    return str(class_idx)
+    return {
+        "class": class_name,
+        "confidence": confidence
+    }
