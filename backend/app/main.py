@@ -33,6 +33,9 @@ app.add_middleware(
 @app.post("/predict", response_model=PredictionResponse)
 def predict_image(req: PredictionRequest):
     try:
+        if model is None:
+            raise HTTPException(status_code=500, detail="Model not loaded")
+
         result = predict(req.image_base64, model)
         return result
 
