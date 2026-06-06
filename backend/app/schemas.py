@@ -1,9 +1,8 @@
 from pydantic import BaseModel
 
-
 class PredictionRequest(BaseModel):
     image_base64: str
 
-
 class PredictionResponse(BaseModel):
-    prediction: str
+    class_: str
+    confidence: float
