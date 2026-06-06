@@ -1,44 +1,44 @@
-# backend/app/main.py
-
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.responses import JSONResponse
 
 from .schemas import PredictionRequest, PredictionResponse
 from .model import predict
-import tensorflow as tf
+from tensorflow.keras.models import load_model
 import os
 
-MODEL_PATH = os.getenv("MODEL_PATH", "/app/model/1.keras")
+app = FastAPI(title="Potato Disease API")
+
+# Load model path (Render/Docker safe)
+MODEL_PATH = "model/1.keras"
+model = None
+
 
 @app.on_event("startup")
 def load_model():
     global model
-    model = tf.keras.models.load_model(MODEL_PATH)
-    print("✅ Model loaded successfully")
-app = FastAPI(title="Potato Disease Prediction API", version="1.0.0")
+    model = load_model(MODEL_PATH)
+    print("Model loaded successfully")
 
-# Allow all origins for simplicity – adjust for production as needed
+
+# CORS for Vercel frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # tighten later in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-@app.post("/predict", response_model=PredictionResponse)
-def get_prediction(req: PredictionRequest):
-    try:
-        result = predict(req.image_base64)
-        return PredictionResponse(prediction=result)
-    except ValueError as ve:
-        raise HTTPException(status_code=400, detail=str(ve))
-    except Exception as e:
-        # Generic error for debugging – in production hide details
-        raise HTTPException(status_code=500, detail="Prediction failed")
 
-# Optional health check
+@app.post("/predict", response_model=PredictionResponse)
+def predict_image(req: PredictionRequest):
+    try:
+        result = predict(req.image_base64, model)
+        return PredictionResponse(prediction=result)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/health")
-def health_check():
-    return JSONResponse(content={"status": "ok"})
+def health():
+    return {"status": "ok"}
